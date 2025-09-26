@@ -1,73 +1,51 @@
-# React + TypeScript + Vite
+# 🌦️ React TS Weather App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern and responsive **Weather Application** built with **React + TypeScript**. This app fetches real-time weather data from the **OpenWeatherMap API**, allowing users to view the current weather, hourly forecast, and weekly forecast for their current location or searched cities. It also supports multiple saved locations,and theme customization
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
+- **Real-time Weather Info**  
+  - Current weather (temperature, humidity, wind speed, etc.)
+  - Hourly and daily forecasts
+- **Location-based Forecasting**  
+  - Auto-detects user’s location (with permission)
+  - Search and save multiple cities
+- **Weather Alerts**  
+  - Push notifications for severe conditions
+- **Customization**  
+  - Switch between **Celsius** and **Fahrenheit**
+  - Toggle between **light** and **dark themes**
+- **Offline Access**  
+  - Cached weather data stored in `localStorage`
+- **Responsive Design**  
+  - Works seamlessly on mobile, tablet, and desktop
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
+- **React 18 + TypeScript**
+- **React Router DOM v6** – navigation
+- **Framer Motion** – animations
+- **Fetch API** – API requests
+- **localStorage** – data persistence
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🌍 API Reference
+Using **OpenWeatherMap One Call API**:
+- Current weather data
+- Hourly forecast
+- Daily forecast
+- Severe weather alerts
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+📖 [OpenWeatherMap Docs](https://openweathermap.org/api)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🔮 Future Enhancements
+- Add **multi-language support** 🌐
+- Add **radar and satellite maps** 🗺️
+- Integrate with **PWA** for full offline experience 📦
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
