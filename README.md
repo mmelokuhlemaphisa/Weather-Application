@@ -3,7 +3,13 @@
 A modern and responsive **Weather Application** built with **React + TypeScript**. This app fetches real-time weather data from the **OpenWeatherMap API**, allowing users to view the current weather, hourly forecast, and weekly forecast for their current location or searched cities. It also supports multiple saved locations,and theme customization
 
 ---
-
+## Steps Taken to Build the React App
+* Set up React Project
+* npm create vite@latest
+* Project name Task8-1-UI-challenge
+* cd Task8-1-UI-challenge
+* npm install
+* npm run dev.                              ---                                         
 ## ✨ Features
 - **Real-time Weather Info**  
   - Current weather (temperature, humidity, wind speed, etc.)
@@ -20,6 +26,17 @@ A modern and responsive **Weather Application** built with **React + TypeScript*
   - Cached weather data stored in `localStorage`
 - **Responsive Design**  
   - Works seamlessly on mobile, tablet, and desktop
+---
+
+## How to Clone and Run This Project steps
+1. Open vs code.
+2.On welcome page click on Clone Git repository.
+3.Past the repository URL (https://github.com/mmelokuhlemaphisa/Task8-1-UI-Challenge.git) then press enter.
+4. Choose a local folder where you want to save project.
+5. Click Open.
+6. Use Terminal to install npm and run dev
+* npm install
+* npm run dev
 
 ---
 
