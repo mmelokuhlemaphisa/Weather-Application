@@ -378,7 +378,11 @@ ul {
   grid-template-columns: 1fr; /* mobile default: single column */
 }
 
-
+.weather-icon {
+  font-size: 32px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
 
 /* Responsive layout for larger screens */
 @media (min-width: 768px) {
