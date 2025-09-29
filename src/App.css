@@ -15,10 +15,9 @@ body,
   justify-content: center;
 } */
 
-
 .header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
@@ -85,17 +84,15 @@ body,
   background: rgba(255, 255, 255, 0.2);
 }
 
-
-
 .current-weather-card {
-  background:lightblue;
+  background: lightblue;
   border-radius: 1rem;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  grid-column: span 2;
-  color:black;
+  color: black;
   transition: background 0.3s;
+ 
 }
 
 .current-weather-card h2 {
@@ -115,21 +112,31 @@ body,
   margin-bottom: 1rem;
 }
 
+.current-weather-card .weather-details {
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.current-weather-card .weather-details p {
+  margin: 0.25rem 0;
+}
+
 .current-weather-card button {
- 
   background-color: #2563eb; /* blue-600 */
   color: black;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
   transition: background 0.3s;
+  padding: 0.7rem 1rem;
+  font-weight:500;
+ 
+  font-size: medium;
 }
 
 .current-weather-card button:hover {
   background-color: #1d4ed8; /* darker blue */
 }
-
-
 
 .forecast-card {
   background: rgba(255, 255, 255, 0.2);
@@ -165,6 +172,7 @@ body,
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
+ 
 }
 
 .saved-locations h2 {
@@ -174,7 +182,7 @@ body,
 
 .no-locations {
   font-style: italic;
-  color: #555;
+  color: white
 }
 
 ul {
@@ -192,8 +200,7 @@ ul {
 
 .location-name {
   cursor: pointer;
-  text-decoration: underline;
-  color: #007bff;
+  color: black;
 }
 
 .location-name:hover {
@@ -280,11 +287,19 @@ ul {
   margin-right: 4px;
 }
 
-.weather-app {
+/* .weather-app {
   min-height: 100vh;
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  font-family: Arial, sans-serif;
+} */
+
+.weather-app {
+  min-height: 100vh;
+  width: 100%;     /* take full width */
+  margin: 0;       /* no centering */
+  padding: 2rem;
   font-family: Arial, sans-serif;
 }
 
@@ -322,8 +337,6 @@ ul {
   animation: spin 1s linear infinite;
 }
 
-
-
 .error-message {
   background-color: rgba(248, 113, 113, 0.2); /* red-500/20 */
   padding: 1rem;
@@ -335,7 +348,32 @@ ul {
   display: grid;
   gap: 1.5rem;
   margin-bottom: 2rem;
+  grid-template-columns: 1fr; /* mobile default: single column */
 }
 
 
 
+/* Responsive layout for larger screens */
+@media (min-width: 768px) {
+  .grid-container {
+    grid-template-columns: 2fr 1fr; /* current weather + saved locations */
+    align-items: stretch;
+  }
+
+  .forecast-grid {
+    grid-template-columns: repeat(4, 1fr); /* more columns on bigger screens */
+  }
+}
+
+@media (min-width: 1024px) {
+  .forecast-grid {
+    grid-template-columns: repeat(6, 1fr); /* wide screen, more items per row */
+  }
+}
+
+/* Spinner animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

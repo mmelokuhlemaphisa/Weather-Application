@@ -10,6 +10,7 @@ import {
   requestNotificationPermission,
 } from "./utils/Notification";
 
+const API_KEY = "046e50f67e86c1a28c476fb2dd9cbb9d";
 
 const LOCAL_KEYS = {
   THEME: "wea_theme",
@@ -77,52 +78,6 @@ const WeatherApp: React.FC = () => {
     };
   }, []);
 
-  // --- Mock Weather Generator
-  const generateMockWeather = (location: string): WeatherData => {
-    const conditions = [
-      "Clear",
-      "Cloudy",
-      "Rainy",
-      "Sunny",
-      "Partly Cloudy",
-      "Storm",
-    ];
-    const condition = conditions[Math.floor(Math.random() * conditions.length)];
-    const baseTemp =
-      units === "metric"
-        ? Math.floor(Math.random() * 35) + 5
-        : Math.floor(Math.random() * 63) + 41;
-
-    return {
-      location,
-      current: {
-        temperature: baseTemp,
-        condition,
-        humidity: Math.floor(Math.random() * 60) + 20,
-        windSpeed: Math.floor(Math.random() * 20) + 1,
-        visibility: Math.floor(Math.random() * 10) + 1,
-        uvIndex: Math.floor(Math.random() * 11),
-        alerts: condition === "Storm" ? ["Severe weather alert!"] : undefined,
-      },
-      daily: Array.from({ length: 7 }, (_, i) => ({
-        day: new Date(Date.now() + i * 86400000).toLocaleDateString("en-US", {
-          weekday: "short",
-        }),
-        high: baseTemp + Math.floor(Math.random() * 8),
-        low: baseTemp - Math.floor(Math.random() * 8),
-        condition: conditions[Math.floor(Math.random() * conditions.length)],
-        precipitation: Math.floor(Math.random() * 100),
-      })),
-      hourly: Array.from({ length: 24 }, (_, i) => ({
-        time: `${i % 12 || 12}:00 ${i < 12 ? "AM" : "PM"}`,
-        temp: baseTemp + Math.floor(Math.random() * 6) - 3,
-        condition: conditions[Math.floor(Math.random() * conditions.length)],
-        precipitation: Math.floor(Math.random() * 100),
-      })),
-      fetchedAt: new Date().toISOString(),
-    };
-  };
-
   const cacheWeather = (locKey: string, data: WeatherData) => {
     localStorage.setItem(
       LOCAL_KEYS.CACHE_PREFIX + locKey,
@@ -151,19 +106,69 @@ const WeatherApp: React.FC = () => {
         }
       }
 
-      await new Promise((r) => setTimeout(r, 500));
-      const data = generateMockWeather(location);
+      // --- Fetch current weather
+      const currentRes = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+          location
+        )}&units=${units}&appid=${API_KEY}`
+      );
+      if (!currentRes.ok) throw new Error("City not found");
+      const currentJson = await currentRes.json();
+
+      // --- Fetch forecast (5 day / 3 hour)
+      const forecastRes = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(
+          location
+        )}&units=${units}&appid=${API_KEY}`
+      );
+      if (!forecastRes.ok) throw new Error("Forecast not found");
+      const forecastJson = await forecastRes.json();
+
+      // Transform into WeatherData
+      const data: WeatherData = {
+        location: currentJson.name,
+        current: {
+          temperature: Math.round(currentJson.main.temp),
+          condition: currentJson.weather[0].description,
+          humidity: currentJson.main.humidity,
+          windSpeed: currentJson.wind.speed,
+          visibility: currentJson.visibility / 1000, // in km
+          uvIndex: 0, // requires OneCall API, placeholder
+        },
+        daily: forecastJson.list
+          .filter((_: any, idx: number) => idx % 8 === 0) // one per day
+          .slice(0, 7)
+          .map((item: any) => ({
+            day: new Date(item.dt * 1000).toLocaleDateString("en-US", {
+              weekday: "short",
+            }),
+            high: Math.round(item.main.temp_max),
+            low: Math.round(item.main.temp_min),
+            condition: item.weather[0].description,
+            precipitation: item.pop * 100,
+          })),
+        hourly: forecastJson.list.slice(0, 24).map((item: any) => ({
+          time: new Date(item.dt * 1000).toLocaleTimeString("en-US", {
+            hour: "numeric",
+          }),
+          temp: Math.round(item.main.temp),
+          condition: item.weather[0].description,
+          precipitation: item.pop * 100,
+        })),
+        fetchedAt: new Date().toISOString(),
+      };
+
       setCurrentWeather(data);
       setForecast(data);
       cacheWeather(location, data);
 
-      if (data.current.alerts?.length) {
+      if (data.current.condition.toLowerCase().includes("storm")) {
         showNotification(`Weather alert for ${location}`, {
-          body: data.current.alerts.join("\n"),
+          body: "Severe weather conditions detected!",
         });
       }
-    } catch {
-      setError("Failed to fetch weather");
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch weather");
     } finally {
       setLoading(false);
     }
