@@ -385,26 +385,101 @@ ul {
 }
 
 /* Responsive layout for larger screens */
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
   .grid-container {
-    grid-template-columns: 2fr 1fr; /* current weather + saved locations */
+    grid-template-columns: 2fr 1fr; 
     align-items: stretch;
   }
 
   .forecast-grid {
-    grid-template-columns: repeat(4, 1fr); /* more columns on bigger screens */
+    grid-template-columns: repeat(4, 1fr); 
   }
 }
 
 @media (min-width: 1024px) {
   .forecast-grid {
-    grid-template-columns: repeat(6, 1fr); /* wide screen, more items per row */
+    grid-template-columns: repeat(6, 1fr); 
   }
-}
+} */
 
 /* Spinner animation */
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+/* Mobile-first adjustments */
+@media (max-width: 480px) {
+  .header {
+    flex-direction: column; /* stack items vertically */
+    gap: 0.5rem;
+    padding: 0 1rem; /* avoid horizontal overflow */
+  }
+
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start; /* align left */
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .header-top h1 {
+    margin-left: 0;
+    font-size: 1.6rem; /* smaller title */
+  }
+
+  .header-form {
+    width: 100%; /* full width */
+    max-width: 100%;
+  }
+
+  .settings-panel {
+    width: 100%;
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .grid-container {
+    grid-template-columns: 1fr; /* stack vertically */
+  }
+}
+
+/* Extra small & small phones (portrait & landscape) */
+@media (max-width: 480px) {
+  .forecast-grid {
+    grid-template-columns: 1fr; /* always single column */
+  }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+  .forecast-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  }
+}
+
+/* Small laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .forecast-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  }
+}
+@media (min-width: 768px) {
+  .grid-container {
+    grid-template-columns: 2fr 1fr; /* current weather + saved locations side by side */
+    align-items: start; /* align top edges */
+  }
+}
+/* Desktops */
+@media (min-width: 1025px) and (max-width: 1200px) {
+  .forecast-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  }
+}
+
+/* Large desktops */
+@media (min-width: 1201px) {
+  .forecast-grid {
+    grid-template-columns: repeat(6, 1fr); /* columns */
   }
 }

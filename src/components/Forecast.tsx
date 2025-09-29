@@ -12,9 +12,13 @@ const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
 
   if (viewMode === "hourly") {
     const now = new Date();
-    const tomorrowNoon = new Date();
-    tomorrowNoon.setDate(now.getDate() + 1);
-    tomorrowNoon.setHours(12, 0, 0, 0);
+
+    // round down to nearest hour
+    now.setMinutes(0, 0, 0);
+
+    const tomorrowEnd = new Date();
+    tomorrowEnd.setDate(now.getDate() + 1);
+    tomorrowEnd.setHours(23, 0, 0, 0);
 
     // Normalize API times (string → number)
     const raw = forecast.hourly.map((h) => ({
@@ -22,10 +26,11 @@ const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
       time: typeof h.time === "string" ? new Date(h.time).getTime() : h.time,
     }));
 
-    // Build continuous hourly list
+    // Build hourly list (always exact hours)
     const hours: any[] = [];
     let current = new Date(now);
-    while (current <= tomorrowNoon) {
+
+    while (current <= tomorrowEnd) {
       const t = current.getTime();
 
       // Find nearest "before" and "after" points
@@ -36,12 +41,10 @@ const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
       let condition = before?.condition ?? after?.condition ?? "Unknown";
       let precipitation = before?.precipitation ?? after?.precipitation ?? 0;
 
-      // Interpolate temperature if both before & after exist
+      // Interpolate if both before & after exist
       if (before && after) {
         const ratio = (t - before.time) / (after.time - before.time);
         temp = Math.round(before.temp + (after.temp - before.temp) * ratio);
-
-        // also interpolate precipitation
         precipitation = Math.round(
           before.precipitation +
             (after.precipitation - before.precipitation) * ratio
