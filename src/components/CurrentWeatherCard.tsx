@@ -1,5 +1,6 @@
 import React from "react";
 import type { WeatherData } from "../types/Weather";
+import WeatherIcon from "./WeatherIcon"; // <-- import your WeatherIcon component
 
 interface CurrentWeatherCardProps {
   data: WeatherData;
@@ -15,6 +16,9 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
   return (
     <div className="current-weather-card">
       <h2>{data.location}</h2>
+
+      {/* Weather icon */}
+      <WeatherIcon condition={data.current.condition} />
 
       <p className="temperature">
         {data.current.temperature}° {units === "metric" ? "C" : "F"}

@@ -25,9 +25,7 @@ const WeatherApp: React.FC = () => {
     null
   );
   const [forecast, setForecast] = useState<WeatherData | null>(null);
-  const [savedLocations, setSavedLocations] = useState<
-    { id: number; name: string }[]
-  >([]);
+  const [savedLocations, setSavedLocations] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -125,6 +123,22 @@ const WeatherApp: React.FC = () => {
       const forecastJson = await forecastRes.json();
 
       // Transform into WeatherData
+      const now = Date.now();
+      const twelvePM = new Date();
+      twelvePM.setDate(twelvePM.getDate() + 1);
+      twelvePM.setHours(12, 0, 0, 0);
+
+      const hourlyData = forecastJson.list
+        .map((item: any) => ({
+          time: item.dt * 1000,
+          temp: Math.round(item.main.temp),
+          condition: item.weather[0].description,
+          precipitation: item.pop * 100,
+        }))
+        .filter(
+          (item: any) => item.time >= now && item.time <= twelvePM.getTime()
+        );
+
       const data: WeatherData = {
         location: currentJson.name,
         current: {
@@ -132,11 +146,11 @@ const WeatherApp: React.FC = () => {
           condition: currentJson.weather[0].description,
           humidity: currentJson.main.humidity,
           windSpeed: currentJson.wind.speed,
-          visibility: currentJson.visibility / 1000, // in km
-          uvIndex: 0, // requires OneCall API, placeholder
+          visibility: currentJson.visibility / 1000,
+          uvIndex: 0,
         },
         daily: forecastJson.list
-          .filter((_: any, idx: number) => idx % 8 === 0) // one per day
+          .filter((_: any, idx: number) => idx % 8 === 0)
           .slice(0, 7)
           .map((item: any) => ({
             day: new Date(item.dt * 1000).toLocaleDateString("en-US", {
@@ -147,14 +161,7 @@ const WeatherApp: React.FC = () => {
             condition: item.weather[0].description,
             precipitation: item.pop * 100,
           })),
-        hourly: forecastJson.list.slice(0, 24).map((item: any) => ({
-          time: new Date(item.dt * 1000).toLocaleTimeString("en-US", {
-            hour: "numeric",
-          }),
-          temp: Math.round(item.main.temp),
-          condition: item.weather[0].description,
-          precipitation: item.pop * 100,
-        })),
+        hourly: hourlyData,
         fetchedAt: new Date().toISOString(),
       };
 
@@ -181,15 +188,27 @@ const WeatherApp: React.FC = () => {
     setSearchQuery("");
   };
 
-  const saveLocation = (location: string) => {
-    if (savedLocations.some((s) => s.name === location)) {
-      showNotification(`${location} already saved`);
-      return;
-    }
-    const next = [...savedLocations, { id: Date.now(), name: location }];
-    setSavedLocations(next);
-    localStorage.setItem(LOCAL_KEYS.LOCATIONS, JSON.stringify(next));
-  };
+const saveLocation = (location: string) => {
+  if (!currentWeather) return; // nothing to save
+  const existing = savedLocations.find((s) => s.name === location);
+  if (existing) {
+    showNotification(`${location} already saved`);
+    return;
+  }
+
+  const next = [
+    ...savedLocations,
+    {
+      id: Date.now(),
+      name: location,
+      temperature: currentWeather.current.temperature, // always in °C
+      condition: currentWeather.current.condition,
+    },
+  ];
+  setSavedLocations(next);
+  localStorage.setItem(LOCAL_KEYS.LOCATIONS, JSON.stringify(next));
+};
+
 
   const removeLocation = (id: number) => {
     const next = savedLocations.filter((s) => s.id !== id);
@@ -259,15 +278,6 @@ const WeatherApp: React.FC = () => {
             locations={savedLocations}
             fetchWeather={fetchWeather}
             removeLocation={removeLocation}
-            units={units}
-            weatherData={
-              currentWeather
-                ? {
-                    [currentWeather.location]:
-                      currentWeather.current.temperature,
-                  }
-                : {}
-            }
           />
         </div>
       )}

@@ -1,5 +1,6 @@
 import React from "react";
 import type { WeatherData } from "../types/Weather";
+import WeatherIcon from "./WeatherIcon";
 
 interface ForecastProps {
   forecast: WeatherData;
@@ -7,32 +8,63 @@ interface ForecastProps {
 }
 
 const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
-  let data = viewMode === "daily" ? forecast.daily : forecast.hourly;
+  let data: any = viewMode === "daily" ? forecast.daily : forecast.hourly;
 
   if (viewMode === "hourly") {
-    // Sort hourly data so current hour comes first
     const now = new Date();
-    data = forecast.hourly.slice().sort((a, b) => {
-      const getHour = (h: any) => {
-        const hour = new Date(h.time).getHours();
-        return hour;
-      };
-      // Calculate hour difference from now
-      const diffA = (getHour(a) - now.getHours() + 24) % 24;
-      const diffB = (getHour(b) - now.getHours() + 24) % 24;
-      return diffA - diffB;
-    });
+    const tomorrowNoon = new Date();
+    tomorrowNoon.setDate(now.getDate() + 1);
+    tomorrowNoon.setHours(12, 0, 0, 0);
+
+    // Normalize API times (string → number)
+    const raw = forecast.hourly.map((h) => ({
+      ...h,
+      time: typeof h.time === "string" ? new Date(h.time).getTime() : h.time,
+    }));
+
+    // Build continuous hourly list
+    const hours: any[] = [];
+    let current = new Date(now);
+    while (current <= tomorrowNoon) {
+      const t = current.getTime();
+
+      // Find nearest "before" and "after" points
+      const before = raw.filter((h) => h.time <= t).slice(-1)[0];
+      const after = raw.find((h) => h.time > t);
+
+      let temp = before?.temp ?? after?.temp ?? 0;
+      let condition = before?.condition ?? after?.condition ?? "Unknown";
+      let precipitation = before?.precipitation ?? after?.precipitation ?? 0;
+
+      // Interpolate temperature if both before & after exist
+      if (before && after) {
+        const ratio = (t - before.time) / (after.time - before.time);
+        temp = Math.round(before.temp + (after.temp - before.temp) * ratio);
+
+        // also interpolate precipitation
+        precipitation = Math.round(
+          before.precipitation +
+            (after.precipitation - before.precipitation) * ratio
+        );
+      }
+
+      hours.push({ time: t, temp, condition, precipitation });
+      current.setHours(current.getHours() + 1);
+    }
+
+    data = hours;
   }
 
   return (
     <div className="forecast-card">
       <h2>Forecast ({viewMode})</h2>
       <div className="forecast-grid">
-        {data.map((item, i) => (
+        {data.map((item: any, i: number) => (
           <div key={i} className="forecast-item">
             {"day" in item ? (
               <>
                 <p>{item.day}</p>
+                <WeatherIcon condition={item.condition} size={36} />
                 <p>
                   {item.high}° / {item.low}°
                 </p>
@@ -40,9 +72,17 @@ const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
               </>
             ) : (
               <>
-                <p>{item.time}</p>
-                <p>{item.temp}°</p>
+                <p>
+                  {new Date(item.time).toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  })}
+                </p>
+                <WeatherIcon condition={item.condition} size={36} />
+                <p>{item.temp}°C</p>
                 <p>{item.condition}</p>
+                <p>💧 {item.precipitation}%</p>
               </>
             )}
           </div>

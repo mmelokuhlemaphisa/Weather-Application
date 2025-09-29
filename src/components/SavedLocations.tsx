@@ -1,19 +1,22 @@
 import React from "react";
 
+export interface SavedLocation {
+  id: number;
+  name: string;
+  temperature: number; // in Celsius
+  condition?: string; // optional
+}
+
 interface SavedLocationsProps {
-  locations: { id: number; name: string }[];
+  locations: SavedLocation[];
   fetchWeather: (location: string) => void;
   removeLocation: (id: number) => void;
-  weatherData: { [location: string]: number }; // temperature for each location
-  units: "metric" | "imperial"; // for unit display
 }
 
 const SavedLocations: React.FC<SavedLocationsProps> = ({
   locations,
   fetchWeather,
   removeLocation,
-  weatherData,
-  units,
 }) => {
   return (
     <div className="saved-locations">
@@ -21,6 +24,7 @@ const SavedLocations: React.FC<SavedLocationsProps> = ({
       {locations.length === 0 && (
         <p className="no-locations">No saved locations</p>
       )}
+
       <ul>
         {locations.map((loc) => (
           <li key={loc.id} className="location-item">
@@ -28,12 +32,8 @@ const SavedLocations: React.FC<SavedLocationsProps> = ({
               onClick={() => fetchWeather(loc.name)}
               className="location-name"
             >
-              {loc.name}{" "}
-              {weatherData[loc.name] !== undefined && (
-                <span className="location-temp">
-                  {weatherData[loc.name]}°{units === "metric" ? "C" : "F"}
-                </span>
-              )}
+              {loc.name}: {loc.temperature}°C
+              {loc.condition ? `, ${loc.condition}` : ""}
             </span>
             <button
               onClick={() => removeLocation(loc.id)}
@@ -47,6 +47,5 @@ const SavedLocations: React.FC<SavedLocationsProps> = ({
     </div>
   );
 };
-
 
 export default SavedLocations;
