@@ -45,6 +45,7 @@ html, body, #root {
   gap: 0.5rem;
   backdrop-filter: blur(6px);
   border: 1px solid;
+  
 }
 
 .header-form input {
@@ -141,7 +142,7 @@ html, body, #root {
 
 .current-weather-card button:hover {
   background-color: #059669;
-  transform: scale(1.05);
+  transform: scale(1.0);
 }
 
 /* Forecast */
