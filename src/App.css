@@ -168,21 +168,28 @@ body,
 }
 
 .saved-locations {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
- 
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  max-width: 300px;
 }
 
 .saved-locations h2 {
-  font-weight: bold;
-  margin-bottom: 12px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 14px;
+  color: #fff;
+  text-align: center;
 }
 
 .no-locations {
   font-style: italic;
-  color: white
+  color: #ddd;
+  text-align: center;
+  padding: 10px 0;
 }
 
 ul {
@@ -195,29 +202,49 @@ ul {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.location-item:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(3px);
 }
 
 .location-name {
   cursor: pointer;
-  color: black;
+  color: #fff;
+  font-weight: 500;
+  transition: color 0.2s;
 }
 
 .location-name:hover {
-  color: #0056b3;
+  color: #00bfff;
+}
+
+.location-temp {
+  font-weight: 500;
+  margin-left: 8px;
+  color: #00bfff;
 }
 
 .remove-btn {
   background: none;
   border: none;
-  color: red;
+  color: #ff4d4d;
   cursor: pointer;
   font-size: 16px;
+  font-weight: bold;
+  transition: color 0.2s, transform 0.2s;
 }
 
 .remove-btn:hover {
-  color: darkred;
+  color: #ff1a1a;
+  transform: scale(1.2);
 }
+
 
 .settings-panel {
   background-color: rgba(255, 255, 255, 0.2);

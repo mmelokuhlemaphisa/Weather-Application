@@ -259,6 +259,15 @@ const WeatherApp: React.FC = () => {
             locations={savedLocations}
             fetchWeather={fetchWeather}
             removeLocation={removeLocation}
+            units={units}
+            weatherData={
+              currentWeather
+                ? {
+                    [currentWeather.location]:
+                      currentWeather.current.temperature,
+                  }
+                : {}
+            }
           />
         </div>
       )}
