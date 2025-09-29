@@ -355,6 +355,110 @@ html, body, #root {
   gap: 1rem;
 }
 
+/* Dark Mode Overrides */
+.weather-app.dark {
+  background-color: #111827; /* main background */
+  color: #f9fafb; /* primary text */
+}
+
+/* Header */
+.weather-app.dark .header-top h1 {
+  color: #3b82f6; /* a lighter blue for contrast */
+}
+
+.weather-app.dark .header-form {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f9fafb;
+  backdrop-filter: blur(6px);
+}
+
+.weather-app.dark .header-form input {
+  color: #f9fafb;
+}
+
+.weather-app.dark .header-form input::placeholder {
+  color: rgba(249, 250, 251, 0.5);
+}
+
+.weather-app.dark .header-form button {
+  background-color: #2563eb;
+  color: white;
+}
+
+/* Cards */
+.weather-app.dark .current-weather-card {
+  background: linear-gradient(135deg, #1f2937, #374151); /* dark gradient */
+  color: #f9fafb;
+}
+
+.weather-app.dark .current-weather-card button {
+  background-color: #059669;
+  color: white;
+}
+
+.weather-app.dark .forecast-card {
+  background: #1f2937;
+  color: #f9fafb;
+}
+
+.weather-app.dark .forecast-item {
+  background: #374151;
+  color: #f9fafb;
+}
+
+.weather-app.dark .saved-locations {
+  background-color: #1f2937;
+color: white;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+}
+
+.weather-app.dark .location-item:hover {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+.weather-app.dark .remove-btn {
+  color: #f87171;
+}
+
+.weather-app.dark .remove-btn:hover {
+  color: #ef4444;
+}
+
+.weather-app.dark .settings-panel {
+  background-color: #1f2937;
+  color: #f9fafb;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+}
+
+.weather-app.dark .settings-buttons button:nth-child(1) {
+  background-color: #2563eb;
+}
+
+.weather-app.dark .settings-buttons button:nth-child(2) {
+  background-color: #10b981;
+}
+
+.weather-app.dark .settings-buttons button:nth-child(3) {
+  background-color: #6f42c1;
+}
+
+/* Notifications / banners */
+.weather-app.dark .offline-banner {
+  background-color: #f59e0b;
+  color: #111827;
+}
+
+.weather-app.dark .loading-spinner {
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #60a5fa;
+}
+
+.weather-app.dark .error-message {
+  background-color: #b91c1c;
+  color: #fca5a5;
+}
+
+
 @media (max-width: 480px) {
   .grid-container {
     grid-template-columns: 1fr;
