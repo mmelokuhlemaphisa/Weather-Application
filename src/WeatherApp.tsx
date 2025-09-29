@@ -122,7 +122,6 @@ const WeatherApp: React.FC = () => {
       if (!forecastRes.ok) throw new Error("Forecast not found");
       const forecastJson = await forecastRes.json();
 
-      // Transform into WeatherData
       const now = Date.now();
       const twelvePM = new Date();
       twelvePM.setDate(twelvePM.getDate() + 1);
@@ -188,27 +187,26 @@ const WeatherApp: React.FC = () => {
     setSearchQuery("");
   };
 
-const saveLocation = (location: string) => {
-  if (!currentWeather) return; // nothing to save
-  const existing = savedLocations.find((s) => s.name === location);
-  if (existing) {
-    showNotification(`${location} already saved`);
-    return;
-  }
+  const saveLocation = (location: string) => {
+    if (!currentWeather) return;
+    const existing = savedLocations.find((s) => s.name === location);
+    if (existing) {
+      showNotification(`${location} already saved`);
+      return;
+    }
 
-  const next = [
-    ...savedLocations,
-    {
-      id: Date.now(),
-      name: location,
-      temperature: currentWeather.current.temperature, // always in °C
-      condition: currentWeather.current.condition,
-    },
-  ];
-  setSavedLocations(next);
-  localStorage.setItem(LOCAL_KEYS.LOCATIONS, JSON.stringify(next));
-};
-
+    const next = [
+      ...savedLocations,
+      {
+        id: Date.now(),
+        name: location,
+        temperature: currentWeather.current.temperature,
+        condition: currentWeather.current.condition,
+      },
+    ];
+    setSavedLocations(next);
+    localStorage.setItem(LOCAL_KEYS.LOCATIONS, JSON.stringify(next));
+  };
 
   const removeLocation = (id: number) => {
     const next = savedLocations.filter((s) => s.id !== id);
@@ -216,11 +214,65 @@ const saveLocation = (location: string) => {
     localStorage.setItem(LOCAL_KEYS.LOCATIONS, JSON.stringify(next));
   };
 
+  // Updated toggleUnits with proper rounding
   const toggleUnits = () => {
     const next = units === "metric" ? "imperial" : "metric";
     setUnits(next);
     localStorage.setItem(LOCAL_KEYS.UNITS, next);
-    if (currentWeather) fetchWeather(currentWeather.location);
+
+    const unitLabel = next === "metric" ? "°C" : "°F";
+    showNotification(`Temperature units switched to ${unitLabel}`);
+
+    const convertTemp = (temp: number) =>
+      next === "imperial"
+        ? Math.round((temp * 9) / 5 + 32)
+        : Math.round(((temp - 32) * 5) / 9);
+
+    if (currentWeather) {
+      setCurrentWeather((prev) =>
+        prev
+          ? {
+              ...prev,
+              current: {
+                ...prev.current,
+                temperature: convertTemp(prev.current.temperature),
+              },
+              hourly: prev.hourly?.map((h) => ({
+                ...h,
+                temp: convertTemp(h.temp),
+              })),
+              daily: prev.daily?.map((d) => ({
+                ...d,
+                high: convertTemp(d.high),
+                low: convertTemp(d.low),
+              })),
+            }
+          : null
+      );
+    }
+
+    if (forecast) {
+      setForecast((prev) =>
+        prev
+          ? {
+              ...prev,
+              current: {
+                ...prev.current,
+                temperature: convertTemp(prev.current.temperature),
+              },
+              hourly: prev.hourly?.map((h) => ({
+                ...h,
+                temp: convertTemp(h.temp),
+              })),
+              daily: prev.daily?.map((d) => ({
+                ...d,
+                high: convertTemp(d.high),
+                low: convertTemp(d.low),
+              })),
+            }
+          : null
+      );
+    }
   };
 
   const toggleTheme = () => {

@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({
       </div>
 
       <form onSubmit={handleSearch} className="header-form">
-        <Search className="search-icon" />
+        {/* <Search className="search-icon" /> */}
         <input
           type="text"
           placeholder="Search for a city..."
