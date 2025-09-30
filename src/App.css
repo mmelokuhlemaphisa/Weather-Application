@@ -39,7 +39,7 @@ html, body, #root {
   align-items: center;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
-  padding: 0.5rem 1rem;
+  padding: 0.01rem;
   width: 100%;
   max-width: 400px;
   gap: 0.5rem;
@@ -55,6 +55,7 @@ html, body, #root {
   outline: none;
   color: #111827;
   font-size: 1rem;
+
 }
 
 .header-form input::placeholder {
@@ -183,7 +184,7 @@ html, body, #root {
 
 /* Saved Locations */
 .saved-locations {
-  background-color: white;
+  background-color: white ;
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 20px;
@@ -203,6 +204,8 @@ html, body, #root {
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
+  border: 1px solid;
+  color: black;
   border-radius: 8px;
   transition: background 0.2s, transform 0.2s;
 }
@@ -212,9 +215,9 @@ html, body, #root {
   transform: translateX(3px);
 }
 
-.location-name {
+.weather-app.dark .location-name {
   cursor: pointer;
-  color: #111827;
+  color: white;
   font-weight: 500;
   transition: color 0.2s;
 }
@@ -291,7 +294,7 @@ html, body, #root {
   background-color: #6f42c1;
 }
 
-/* App Wrapper */
+
 .weather-app {
   min-height: 100vh;
   width: 100%;
@@ -309,11 +312,11 @@ html, body, #root {
   color: #f9fafb;
 }
 
-/* Notifications / banners */
+
 .offline-banner {
   margin-bottom: 1rem;
   padding: 0.75rem;
-  background-color: #facc15; /* yellow */
+  background-color: #facc15; 
   color: #111827;
   text-align: center;
   border-radius: 0.5rem;
@@ -342,28 +345,28 @@ html, body, #root {
   color: #7f1d1d;
 }
 
-/* Grid */
+
 .grid-container {
   display: grid;
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
-/* Forecast grid responsive */
+
 .forecast-grid {
   display: grid;
   gap: 1rem;
 }
 
-/* Dark Mode Overrides */
+
 .weather-app.dark {
-  background-color: #111827; /* main background */
-  color: #f9fafb; /* primary text */
+  background-color: #111827; 
+  color: #f9fafb; 
 }
 
-/* Header */
+
 .weather-app.dark .header-top h1 {
-  color: #3b82f6; /* a lighter blue for contrast */
+  color: #3b82f6; 
 }
 
 .weather-app.dark .header-form {
@@ -385,7 +388,7 @@ html, body, #root {
   color: white;
 }
 
-/* Cards */
+
 .weather-app.dark .current-weather-card {
   background: linear-gradient(135deg, #1f2937, #374151); /* dark gradient */
   color: #f9fafb;
@@ -407,13 +410,14 @@ html, body, #root {
 }
 
 .weather-app.dark .saved-locations {
-  background-color: #1f2937;
-color: white;
+   background: linear-gradient(135deg, #1f2937, #374151); /* dark gradient */
+  color: #f9fafb;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
 }
 
 .weather-app.dark .location-item:hover {
   background-color: rgba(59, 130, 246, 0.2);
+  color: white;
 }
 
 .weather-app.dark .remove-btn {
@@ -439,7 +443,7 @@ color: white;
 }
 
 .weather-app.dark .settings-buttons button:nth-child(3) {
-  background-color: #6f42c1;
+  background-color:#10b981;
 }
 
 /* Notifications / banners */

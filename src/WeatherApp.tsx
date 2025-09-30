@@ -35,47 +35,80 @@ const WeatherApp: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
 
-  useEffect(() => {
-    const t = localStorage.getItem(LOCAL_KEYS.THEME);
-    const u = localStorage.getItem(LOCAL_KEYS.UNITS) as
-      | "metric"
-      | "imperial"
-      | null;
-    const locs = localStorage.getItem(LOCAL_KEYS.LOCATIONS);
+  // ----------------------------
+  // Fetch weather by coordinates
+  // ----------------------------
+  const fetchWeatherByCoords = async (lat: number, lon: number) => {
+    setLoading(true);
+    setError("");
+    try {
+      const currentRes = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`
+      );
+      if (!currentRes.ok) throw new Error("Location not found");
+      const currentJson = await currentRes.json();
 
-    if (t) setDarkMode(t === "dark");
-    if (u) setUnits(u);
-    if (locs) {
-      try {
-        setSavedLocations(JSON.parse(locs));
-      } catch {}
+      const forecastRes = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`
+      );
+      if (!forecastRes.ok) throw new Error("Forecast not found");
+      const forecastJson = await forecastRes.json();
+
+      const now = Date.now();
+      const twelvePM = new Date();
+      twelvePM.setDate(twelvePM.getDate() + 1);
+      twelvePM.setHours(12, 0, 0, 0);
+
+      const hourlyData = forecastJson.list
+        .map((item: any) => ({
+          time: item.dt * 1000,
+          temp: Math.round(item.main.temp),
+          condition: item.weather[0].description,
+          precipitation: item.pop * 100,
+        }))
+        .filter(
+          (item: any) => item.time >= now && item.time <= twelvePM.getTime()
+        );
+
+      const data: WeatherData = {
+        location: currentJson.name,
+        current: {
+          temperature: Math.round(currentJson.main.temp),
+          condition: currentJson.weather[0].description,
+          humidity: currentJson.main.humidity,
+          windSpeed: currentJson.wind.speed,
+          visibility: currentJson.visibility / 1000,
+          uvIndex: 0,
+        },
+        daily: forecastJson.list
+          .filter((_: any, idx: number) => idx % 8 === 0)
+          .slice(0, 7)
+          .map((item: any) => ({
+            day: new Date(item.dt * 1000).toLocaleDateString("en-US", {
+              weekday: "short",
+            }),
+            high: Math.round(item.main.temp_max),
+            low: Math.round(item.main.temp_min),
+            condition: item.weather[0].description,
+            precipitation: item.pop * 100,
+          })),
+        hourly: hourlyData,
+        fetchedAt: new Date().toISOString(),
+      };
+
+      setCurrentWeather(data);
+      setForecast(data);
+      cacheWeather(currentJson.name, data);
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch location weather");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const onOnline = () => setIsOnline(true);
-    const onOffline = () => setIsOnline(false);
-    window.addEventListener("online", onOnline);
-    window.addEventListener("offline", onOffline);
-
-    requestNotificationPermission().catch(() => {});
-
-    const last = localStorage.getItem(LOCAL_KEYS.LAST_LOCATION);
-    if (last) {
-      const cached = localStorage.getItem(LOCAL_KEYS.CACHE_PREFIX + last);
-      if (cached) {
-        try {
-          const parsed = JSON.parse(cached) as WeatherData;
-          setCurrentWeather(parsed);
-          setForecast(parsed);
-        } catch {}
-      }
-    }
-
-    return () => {
-      window.removeEventListener("online", onOnline);
-      window.removeEventListener("offline", onOffline);
-    };
-  }, []);
-
+  // ----------------------------
+  // Cache system
+  // ----------------------------
   const cacheWeather = (locKey: string, data: WeatherData) => {
     localStorage.setItem(
       LOCAL_KEYS.CACHE_PREFIX + locKey,
@@ -84,6 +117,9 @@ const WeatherApp: React.FC = () => {
     localStorage.setItem(LOCAL_KEYS.LAST_LOCATION, locKey);
   };
 
+  // ----------------------------
+  // Fetch weather by city name
+  // ----------------------------
   const fetchWeather = async (location: string) => {
     setLoading(true);
     setError("");
@@ -104,7 +140,7 @@ const WeatherApp: React.FC = () => {
         }
       }
 
-      // --- Fetch current weather
+      // Current
       const currentRes = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
           location
@@ -113,7 +149,7 @@ const WeatherApp: React.FC = () => {
       if (!currentRes.ok) throw new Error("City not found");
       const currentJson = await currentRes.json();
 
-      // --- Fetch forecast (5 day / 3 hour)
+      // Forecast
       const forecastRes = await fetch(
         `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(
           location
@@ -167,12 +203,6 @@ const WeatherApp: React.FC = () => {
       setCurrentWeather(data);
       setForecast(data);
       cacheWeather(location, data);
-
-      if (data.current.condition.toLowerCase().includes("storm")) {
-        showNotification(`Weather alert for ${location}`, {
-          body: "Severe weather conditions detected!",
-        });
-      }
     } catch (err: any) {
       setError(err.message || "Failed to fetch weather");
     } finally {
@@ -180,6 +210,68 @@ const WeatherApp: React.FC = () => {
     }
   };
 
+  // ----------------------------
+  // useEffect (initial load)
+  // ----------------------------
+  useEffect(() => {
+    const t = localStorage.getItem(LOCAL_KEYS.THEME);
+    const u = localStorage.getItem(LOCAL_KEYS.UNITS) as
+      | "metric"
+      | "imperial"
+      | null;
+    const locs = localStorage.getItem(LOCAL_KEYS.LOCATIONS);
+
+    if (t) setDarkMode(t === "dark");
+    if (u) setUnits(u);
+    if (locs) {
+      try {
+        setSavedLocations(JSON.parse(locs));
+      } catch {}
+    }
+
+    const onOnline = () => setIsOnline(true);
+    const onOffline = () => setIsOnline(false);
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+
+    requestNotificationPermission().catch(() => {});
+
+    const last = localStorage.getItem(LOCAL_KEYS.LAST_LOCATION);
+    if (last) {
+      const cached = localStorage.getItem(LOCAL_KEYS.CACHE_PREFIX + last);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached) as WeatherData;
+          setCurrentWeather(parsed);
+          setForecast(parsed);
+        } catch {}
+      }
+    } else {
+      // 👇 If no last location, try current geolocation
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
+          },
+          () => {
+            // Fallback if user denies
+            fetchWeather("Johannesburg");
+          }
+        );
+      } else {
+        fetchWeather("Johannesburg");
+      }
+    }
+
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
+    };
+  }, []);
+
+  // ----------------------------
+  // Handlers
+  // ----------------------------
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -214,7 +306,7 @@ const WeatherApp: React.FC = () => {
     localStorage.setItem(LOCAL_KEYS.LOCATIONS, JSON.stringify(next));
   };
 
-  // Updated toggleUnits with proper rounding
+  // Toggle Units
   const toggleUnits = () => {
     const next = units === "metric" ? "imperial" : "metric";
     setUnits(next);
@@ -275,6 +367,7 @@ const WeatherApp: React.FC = () => {
     }
   };
 
+  // Toggle Theme
   const toggleTheme = () => {
     const next = !darkMode;
     setDarkMode(next);
