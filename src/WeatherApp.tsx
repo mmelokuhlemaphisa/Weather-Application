@@ -265,20 +265,54 @@ const WeatherApp: React.FC = () => {
   // Get current location
   // ----------------------------
   const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      setLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
-        },
-        (error) => {
-          setError("Unable to get your location. Please search for a city.");
-          setLoading(false);
-        }
+    if (!navigator.geolocation) {
+      setError(
+        "Geolocation is not supported by this browser. Please search for a city."
       );
-    } else {
-      setError("Geolocation is not supported by this browser.");
+      return;
     }
+
+    setLoading(true);
+    setError(""); // Clear any existing errors
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
+      },
+      (error) => {
+        let errorMessage = "";
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage =
+              "Location permission denied. Please enable location access in your browser settings or search for a city manually.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage =
+              "Location information unavailable. Please search for a city.";
+            break;
+          case error.TIMEOUT:
+            errorMessage =
+              "Location request timed out. Please try again or search for a city.";
+            break;
+          default:
+            errorMessage =
+              "Unable to get your location. Please search for a city.";
+            break;
+        }
+        setError(errorMessage);
+        setLoading(false);
+
+        // Show notification about the issue
+        showNotification(
+          "Location access needed for automatic weather updates"
+        );
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000, // 10 seconds timeout
+        maximumAge: 300000, // 5 minutes cache
+      }
+    );
   };
 
   // ----------------------------
@@ -305,7 +339,12 @@ const WeatherApp: React.FC = () => {
     window.addEventListener("online", onOnline);
     window.addEventListener("offline", onOffline);
 
-    requestNotificationPermission().catch(() => {});
+    // Only request notification permission if not already decided
+    if (Notification.permission === "default") {
+      requestNotificationPermission().catch(() => {
+        // Silently fail - don't spam the user
+      });
+    }
 
     const last = localStorage.getItem(LOCAL_KEYS.LAST_LOCATION);
     if (last) {
@@ -473,7 +512,24 @@ const WeatherApp: React.FC = () => {
         </div>
       )}
 
-      {error && <div className="error-message">{error}</div>}
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
+          {error.includes("permission") && (
+            <div className="permission-help">
+              <p>
+                <strong>How to enable location access:</strong>
+              </p>
+              <ol>
+                <li>Click the 🔒 or ⚙️ icon next to the URL in your browser</li>
+                <li>Set "Location" to "Allow"</li>
+                <li>Refresh the page</li>
+              </ol>
+              <p>Or you can use the 📍 button above to try again.</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {currentWeather && !loading && (
         <div className="grid-container">

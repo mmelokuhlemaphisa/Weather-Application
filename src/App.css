@@ -1053,6 +1053,27 @@ input:checked + .toggle-slider:before {
   color: #7f1d1d;
 }
 
+.permission-help {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 0.5rem;
+  border-left: 4px solid #3b82f6;
+}
+
+.permission-help strong {
+  color: #1e40af;
+}
+
+.permission-help ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.permission-help li {
+  margin-bottom: 0.25rem;
+}
+
 .grid-container {
   display: grid;
   gap: 1.5rem;

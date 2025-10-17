@@ -83,7 +83,9 @@ const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
     </header>
+   
   );
+   console.log(darkMode)
 };
 
 export default Header;

@@ -1,7 +1,6 @@
 import React from "react";
 import {
   WiDaySunny,
-  WiCloud,
   WiCloudy,
   WiRain,
   WiThunderstorm,
