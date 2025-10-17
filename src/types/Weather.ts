@@ -1,11 +1,17 @@
 // src/types.ts
 export interface WeatherCurrent {
   temperature: number;
+  feelsLike: number;
   condition: string;
   humidity: number;
   windSpeed: number;
+  windDirection?: string;
   visibility: number;
   uvIndex: number;
+  pressure?: number;
+  dewPoint?: number;
+  sunrise?: string;
+  sunset?: string;
   alerts?: string[]; // optional alerts text
 }
 

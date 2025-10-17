@@ -12,6 +12,37 @@ import {
 
 const API_KEY = "046e50f67e86c1a28c476fb2dd9cbb9d";
 
+// Utility functions for weather calculations
+const getWindDirection = (degrees?: number): string => {
+  if (degrees === undefined) return "N/A";
+  const directions = [
+    "N",
+    "NNE",
+    "NE",
+    "ENE",
+    "E",
+    "ESE",
+    "SE",
+    "SSE",
+    "S",
+    "SSW",
+    "SW",
+    "WSW",
+    "W",
+    "WNW",
+    "NW",
+    "NNW",
+  ];
+  return directions[Math.round(degrees / 22.5) % 16];
+};
+
+const calculateDewPoint = (temp: number, humidity: number): number => {
+  const a = 17.27;
+  const b = 237.7;
+  const alpha = (a * temp) / (b + temp) + Math.log(humidity / 100);
+  return Math.round((b * alpha) / (a - alpha));
+};
+
 const LOCAL_KEYS = {
   THEME: "wea_theme",
   UNITS: "wea_units",
@@ -72,13 +103,23 @@ const WeatherApp: React.FC = () => {
 
       const data: WeatherData = {
         location: currentJson.name,
+        coordinates: { lat: currentJson.coord.lat, lon: currentJson.coord.lon },
         current: {
           temperature: Math.round(currentJson.main.temp),
+          feelsLike: Math.round(currentJson.main.feels_like),
           condition: currentJson.weather[0].description,
           humidity: currentJson.main.humidity,
-          windSpeed: currentJson.wind.speed,
-          visibility: currentJson.visibility / 1000,
-          uvIndex: 0,
+          windSpeed: Math.round(currentJson.wind.speed),
+          windDirection: getWindDirection(currentJson.wind?.deg),
+          visibility: Math.round((currentJson.visibility / 1000) * 10) / 10,
+          uvIndex: 0, // OpenWeather free tier doesn't include UV index
+          pressure: currentJson.main.pressure,
+          dewPoint: calculateDewPoint(
+            currentJson.main.temp,
+            currentJson.main.humidity
+          ),
+          sunrise: new Date(currentJson.sys.sunrise * 1000).toISOString(),
+          sunset: new Date(currentJson.sys.sunset * 1000).toISOString(),
         },
         daily: forecastJson.list
           .filter((_: any, idx: number) => idx % 8 === 0)
@@ -176,13 +217,23 @@ const WeatherApp: React.FC = () => {
 
       const data: WeatherData = {
         location: currentJson.name,
+        coordinates: { lat: currentJson.coord.lat, lon: currentJson.coord.lon },
         current: {
           temperature: Math.round(currentJson.main.temp),
+          feelsLike: Math.round(currentJson.main.feels_like),
           condition: currentJson.weather[0].description,
           humidity: currentJson.main.humidity,
-          windSpeed: currentJson.wind.speed,
-          visibility: currentJson.visibility / 1000,
-          uvIndex: 0,
+          windSpeed: Math.round(currentJson.wind.speed),
+          windDirection: getWindDirection(currentJson.wind?.deg),
+          visibility: Math.round((currentJson.visibility / 1000) * 10) / 10,
+          uvIndex: 0, // OpenWeather free tier doesn't include UV index
+          pressure: currentJson.main.pressure,
+          dewPoint: calculateDewPoint(
+            currentJson.main.temp,
+            currentJson.main.humidity
+          ),
+          sunrise: new Date(currentJson.sys.sunrise * 1000).toISOString(),
+          sunset: new Date(currentJson.sys.sunset * 1000).toISOString(),
         },
         daily: forecastJson.list
           .filter((_: any, idx: number) => idx % 8 === 0)
@@ -207,6 +258,26 @@ const WeatherApp: React.FC = () => {
       setError(err.message || "Failed to fetch weather");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // ----------------------------
+  // Get current location
+  // ----------------------------
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      setLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
+        },
+        (error) => {
+          setError("Unable to get your location. Please search for a city.");
+          setLoading(false);
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by this browser.");
     }
   };
 
@@ -384,6 +455,9 @@ const WeatherApp: React.FC = () => {
         handleSearch={handleSearch}
         showSettings={showSettings}
         setShowSettings={setShowSettings}
+        darkMode={darkMode}
+        currentLocation={currentWeather?.location}
+        getCurrentLocation={getCurrentLocation}
       />
 
       {!isOnline && (
@@ -400,6 +474,7 @@ const WeatherApp: React.FC = () => {
           toggleUnits={toggleUnits}
           viewMode={viewMode}
           setViewMode={setViewMode}
+          onClose={() => setShowSettings(false)}
         />
       )}
 
