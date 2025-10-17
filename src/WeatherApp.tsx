@@ -318,20 +318,8 @@ const WeatherApp: React.FC = () => {
         } catch {}
       }
     } else {
-      // 👇 If no last location, try current geolocation
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
-          },
-          () => {
-            // Fallback if user denies
-            fetchWeather("Johannesburg");
-          }
-        );
-      } else {
-        fetchWeather("Johannesburg");
-      }
+      // 👇 Always try current geolocation first
+      getCurrentLocation();
     }
 
     return () => {

@@ -99,6 +99,7 @@ body,
   backdrop-filter: blur(10px);
   border: 1px solid rgba(229, 231, 235, 0.8);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .search-input-wrapper {
@@ -245,6 +246,23 @@ body,
     width: 100%;
   }
 
+  .header-form {
+    max-width: 100%;
+    min-width: 280px; /* Ensure minimum width */
+    flex-shrink: 0;
+  }
+
+  .search-input-wrapper {
+    padding: 0 0.75rem; /* Reduce padding on mobile */
+  }
+
+  .search-button {
+    padding: 0.75rem 1rem; /* Adjust button padding */
+    font-size: 0.8rem; /* Slightly smaller font */
+    white-space: nowrap;
+    flex-shrink: 0; /* Prevent button from shrinking */
+  }
+
   .header-actions {
     justify-content: center;
     width: 100%;
@@ -265,6 +283,35 @@ body,
 
   .current-location {
     max-width: 250px; /* Allow more space on mobile */
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .header {
+    padding: 0.75rem;
+  }
+
+  .header-form {
+    min-width: 260px;
+    gap: 0.25rem; /* Reduce gap between input and button */
+  }
+
+  .search-input-wrapper {
+    padding: 0 0.5rem; /* Further reduce padding */
+  }
+
+  .search-button {
+    padding: 0.75rem 0.75rem; /* More compact button */
+    font-size: 0.75rem;
+  }
+
+  .brand-text h1 {
+    font-size: 1.25rem;
+  }
+
+  .brand-subtitle {
+    font-size: 0.75rem;
   }
 }
 
