@@ -18,7 +18,6 @@ const Header: React.FC<HeaderProps> = ({
   handleSearch,
   showSettings,
   setShowSettings,
-  darkMode = false,
   currentLocation,
   getCurrentLocation,
 }) => {
@@ -85,7 +84,7 @@ const Header: React.FC<HeaderProps> = ({
     </header>
    
   );
-   console.log(darkMode)
+ 
 };
 
 export default Header;

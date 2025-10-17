@@ -279,18 +279,18 @@ const WeatherApp: React.FC = () => {
       (pos) => {
         fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
       },
-      (error) => {
+      (geolocationError) => {
         let errorMessage = "";
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
+        switch (geolocationError.code) {
+          case geolocationError.PERMISSION_DENIED:
             errorMessage =
               "Location permission denied. Please enable location access in your browser settings or search for a city manually.";
             break;
-          case error.POSITION_UNAVAILABLE:
+          case geolocationError.POSITION_UNAVAILABLE:
             errorMessage =
               "Location information unavailable. Please search for a city.";
             break;
-          case error.TIMEOUT:
+          case geolocationError.TIMEOUT:
             errorMessage =
               "Location request timed out. Please try again or search for a city.";
             break;
