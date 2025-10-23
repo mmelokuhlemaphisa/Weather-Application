@@ -35,7 +35,7 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
 
   return (
     <div className="current-weather-card">
-      {/* Header with location and save button */}
+    
       <div className="weather-header">
         <h2>{data.location}</h2>
         <button
@@ -47,7 +47,7 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
         </button>
       </div>
 
-      {/* Main weather display */}
+   
       <div className="main-weather">
         <div className="weather-icon-container">
           <WeatherIcon condition={data.current.condition} />

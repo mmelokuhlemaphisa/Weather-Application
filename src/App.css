@@ -100,6 +100,7 @@ body,
   border: 1px solid rgba(229, 231, 235, 0.8);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden; /* Prevent content overflow */
+  color: #000;
 }
 
 .search-input-wrapper {
@@ -128,7 +129,7 @@ body,
 }
 
 .header-form input::placeholder {
-  color: #9ca3af;
+  color: #6b7280;
 }
 
 .search-button {
@@ -1095,17 +1096,42 @@ input:checked + .toggle-slider:before {
 }
 
 .weather-app.dark .header-form {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
   color: #f9fafb;
   backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .weather-app.dark .header-form input {
   color: #f9fafb;
+  -webkit-text-fill-color: #f9fafb; /* Safari/Chrome autofill text */
+}
+
+.weather-app.dark .header-form input:focus,
+.weather-app.dark .header-form input:active {
+  color: #f9fafb !important;
+  -webkit-text-fill-color: #f9fafb !important;
 }
 
 .weather-app.dark .header-form input::placeholder {
-  color: rgba(249, 250, 251, 0.5);
+  color: rgba(249, 250, 251, 0.8) !important;
+  opacity: 1 !important;
+}
+
+/* Autofill / browser-supplied value overrides (WebKit) */
+.weather-app.dark .header-form input:-webkit-autofill,
+.weather-app.dark .header-form input:-webkit-autofill::first-line {
+  -webkit-text-fill-color: #f9fafb !important;
+  box-shadow: 0 0 0px 1000px rgba(255,255,255,0.03) inset !important;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255,255,255,0.03) inset !important;
+}
+
+/* Edge/Firefox specific enforced color (fallbacks) */
+.weather-app.dark .header-form input::-moz-placeholder {
+  color: rgba(249, 250, 251, 0.8) !important;
+}
+.weather-app.dark .header-form input:-ms-input-placeholder {
+  color: rgba(249, 250, 251, 0.8) !important;
 }
 
 .weather-app.dark .header-form button {

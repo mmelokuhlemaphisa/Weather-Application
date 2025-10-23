@@ -82,9 +82,9 @@ const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
     </header>
-   
+    
   );
- 
+
 };
 
 export default Header;
