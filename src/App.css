@@ -1103,14 +1103,21 @@ input:checked + .toggle-slider:before {
 }
 
 .weather-app.dark .header-form input {
-  color: #f9fafb;
-  -webkit-text-fill-color: #f9fafb; /* Safari/Chrome autofill text */
+  color: #111827; /* Dark text for better visibility */
+  -webkit-text-fill-color: #111827; /* Safari/Chrome autofill text */
+  background-color: rgba(255, 255, 255, 0.9); /* Light background for input */
+  border-radius: 1.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .weather-app.dark .header-form input:focus,
 .weather-app.dark .header-form input:active {
-  color: #f9fafb !important;
-  -webkit-text-fill-color: #f9fafb !important;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  background-color: white !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
 }
 
 .weather-app.dark .header-form input::placeholder {

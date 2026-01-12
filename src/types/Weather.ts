@@ -32,7 +32,11 @@ export interface HourlyForecast {
 
 export interface WeatherData {
   location: string;
-  coordinates?: { lat: number; lon: number };
+  country?: string;
+  coordinates: {
+    lat: number;
+    lon: number;
+  };
   current: WeatherCurrent;
   daily: DailyForecast[];
   hourly: HourlyForecast[];

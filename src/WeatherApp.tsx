@@ -101,8 +101,14 @@ const WeatherApp: React.FC = () => {
           (item: any) => item.time >= now && item.time <= twelvePM.getTime()
         );
 
+      // Format location with country if available
+      const locationWithCountry = currentJson.sys?.country 
+        ? `${currentJson.name}, ${currentJson.sys.country}`
+        : currentJson.name;
+
       const data: WeatherData = {
-        location: currentJson.name,
+        location: locationWithCountry,
+        country: currentJson.sys?.country,
         coordinates: { lat: currentJson.coord.lat, lon: currentJson.coord.lon },
         current: {
           temperature: Math.round(currentJson.main.temp),
@@ -215,8 +221,14 @@ const WeatherApp: React.FC = () => {
           (item: any) => item.time >= now && item.time <= twelvePM.getTime()
         );
 
+      // Format location with country if available
+      const locationWithCountry = currentJson.sys?.country 
+        ? `${currentJson.name}, ${currentJson.sys.country}`
+        : currentJson.name;
+
       const data: WeatherData = {
-        location: currentJson.name,
+        location: locationWithCountry,
+        country: currentJson.sys?.country,
         coordinates: { lat: currentJson.coord.lat, lon: currentJson.coord.lon },
         current: {
           temperature: Math.round(currentJson.main.temp),
