@@ -1122,8 +1122,8 @@ input:checked + .toggle-slider:before {
 .weather-app.dark .header-form input:-webkit-autofill,
 .weather-app.dark .header-form input:-webkit-autofill::first-line {
   -webkit-text-fill-color: #f9fafb !important;
-  box-shadow: 0 0 0px 1000px rgba(255,255,255,0.03) inset !important;
-  -webkit-box-shadow: 0 0 0px 1000px rgba(255,255,255,0.03) inset !important;
+  box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.03) inset !important;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.03) inset !important;
 }
 
 /* Edge/Firefox specific enforced color (fallbacks) */
