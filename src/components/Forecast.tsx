@@ -7,21 +7,52 @@ interface ForecastProps {
   viewMode: "daily" | "hourly";
 }
 
-const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
-  let data: any = viewMode === "daily" ? forecast.daily : forecast.hourly;
+/**
+ * Generate weekday names starting from today
+ */
+const getWeekDaysFromToday = (count: number) => {
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const todayIndex = new Date().getDay();
 
+  return Array.from({ length: count }, (_, i) =>
+    days[(todayIndex + i) % 7]
+  );
+};
+
+const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
+  let data: any[] = [];
+
+  /* ---------------- DAILY FORECAST ---------------- */
+  if (viewMode === "daily") {
+    const weekDays = getWeekDaysFromToday(forecast.daily.length);
+
+    data = forecast.daily.map((day, index) => ({
+      ...day,
+      day: weekDays[index],
+    }));
+  }
+
+  /* ---------------- HOURLY FORECAST ---------------- */
   if (viewMode === "hourly") {
     const now = new Date();
 
-    // Round down to the nearest hour
+    // Round down to nearest hour
     now.setMinutes(0, 0, 0);
 
-    // Set end to 12 PM tomorrow
+    // End at 12 PM tomorrow
     const tomorrowNoon = new Date();
     tomorrowNoon.setDate(now.getDate() + 1);
     tomorrowNoon.setHours(12, 0, 0, 0);
 
-    // Normalize API times (string → number)
+    // Normalize API time values
     const raw = forecast.hourly.map((h) => ({
       ...h,
       time: typeof h.time === "string" ? new Date(h.time).getTime() : h.time,
@@ -33,7 +64,6 @@ const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
     while (current <= tomorrowNoon) {
       const t = current.getTime();
 
-      // Find nearest "before" and "after" points
       const before = raw.filter((h) => h.time <= t).slice(-1)[0];
       const after = raw.find((h) => h.time > t);
 
@@ -41,7 +71,7 @@ const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
       let condition = before?.condition ?? after?.condition ?? "Unknown";
       let precipitation = before?.precipitation ?? after?.precipitation ?? 0;
 
-      // Interpolate if both exist
+      // Interpolate values if needed
       if (before && after) {
         const ratio = (t - before.time) / (after.time - before.time);
         temp = Math.round(before.temp + (after.temp - before.temp) * ratio);
@@ -61,8 +91,9 @@ const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
   return (
     <div className="forecast-card">
       <h2>Forecast ({viewMode})</h2>
+
       <div className="forecast-grid">
-        {data.map((item: any, i: number) => (
+        {data.map((item, i) => (
           <div key={i} className="forecast-item">
             {"day" in item ? (
               <>
