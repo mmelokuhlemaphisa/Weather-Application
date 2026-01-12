@@ -67,22 +67,60 @@ const WeatherApp: React.FC = () => {
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
 
   // ----------------------------
+  // Get location name from coordinates using reverse geocoding
+  // ----------------------------
+  const getLocationName = async (lat: number, lon: number): Promise<{name: string, country: string}> => {
+    try {
+      // First try to get the most accurate name from reverse geocoding
+      const reverseGeoRes = await fetch(
+        `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`
+      );
+      
+      if (reverseGeoRes.ok) {
+        const [locationData] = await reverseGeoRes.json();
+        if (locationData) {
+          // Try to get the most specific name available (city, town, village, etc.)
+          const name = locationData.local_names?.en || locationData.name;
+          return {
+            name: name,
+            country: locationData.country
+          };
+        }
+      }
+    } catch (error) {
+      console.error("Reverse geocoding failed:", error);
+    }
+    
+    // Fallback to weather API location name if reverse geocoding fails
+    const weatherRes = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`
+    );
+    const weatherData = await weatherRes.json();
+    
+    return {
+      name: weatherData.name,
+      country: weatherData.sys?.country || ''
+    };
+  };
+
+  // ----------------------------
   // Fetch weather by coordinates
   // ----------------------------
   const fetchWeatherByCoords = async (lat: number, lon: number) => {
     setLoading(true);
     setError("");
     try {
-      const currentRes = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`
-      );
-      if (!currentRes.ok) throw new Error("Location not found");
+      // Get the most accurate location name and weather data in parallel
+      const [locationData, currentRes, forecastRes] = await Promise.all([
+        getLocationName(lat, lon),
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`),
+        fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`)
+      ]);
+      
+      if (!currentRes.ok) throw new Error("Current weather data not found");
+      if (!forecastRes.ok) throw new Error("Forecast data not found");
+      
       const currentJson = await currentRes.json();
-
-      const forecastRes = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`
-      );
-      if (!forecastRes.ok) throw new Error("Forecast not found");
       const forecastJson = await forecastRes.json();
 
       const now = Date.now();
@@ -274,55 +312,97 @@ const WeatherApp: React.FC = () => {
   };
 
   // ----------------------------
-  // Get current location
+  // Get current location with improved reliability
   // ----------------------------
-  const getCurrentLocation = () => {
+  const getCurrentLocation = (retryCount = 0) => {
+    const MAX_RETRIES = 2; // Maximum number of retry attempts
+    const TIMEOUT = 20000; // 20 seconds timeout
+    
     if (!navigator.geolocation) {
-      setError(
-        "Geolocation is not supported by this browser. Please search for a city."
-      );
+      const errorMsg = "Geolocation is not supported by this browser. Please search for a city.";
+      setError(errorMsg);
+      showNotification(errorMsg);
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
-    setError(""); // Clear any existing errors
+    // Only show loading on first attempt to avoid UI flickering during retries
+    if (retryCount === 0) {
+      setLoading(true);
+      setError(""); // Clear any existing errors
+    }
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
+    // Track position to get the most accurate location
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        // Clear the watch as soon as we get a position
+        navigator.geolocation.clearWatch(watchId);
+        
+        // Check if we have good accuracy (in meters)
+        const accuracy = position.coords.accuracy; // in meters
+        const isAccurate = accuracy < 1000; // Only accept accuracy better than 1km
+        
+        if (isAccurate) {
+          console.log(`Location found with accuracy: ${accuracy.toFixed(0)}m`);
+          fetchWeatherByCoords(position.coords.latitude, position.coords.longitude);
+        } else if (retryCount < MAX_RETRIES) {
+          console.log(`Poor accuracy: ${accuracy.toFixed(0)}m, retrying... (${retryCount + 1}/${MAX_RETRIES})`);
+          // If accuracy is poor, retry with a delay
+          setTimeout(() => getCurrentLocation(retryCount + 1), 1000);
+        } else {
+          console.log(`Using best available location with accuracy: ${accuracy.toFixed(0)}m`);
+          // If we've reached max retries, use the best available location but show a warning
+          showNotification(`Using approximate location (accuracy: ${Math.round(accuracy/1000)}km)`);
+          fetchWeatherByCoords(position.coords.latitude, position.coords.longitude);
+        }
       },
-      (geolocationError) => {
+      (error) => {
+        // Clear the watch on error
+        navigator.geolocation.clearWatch(watchId);
+        
         let errorMessage = "";
-        switch (geolocationError.code) {
-          case geolocationError.PERMISSION_DENIED:
-            errorMessage =
-              "Location permission denied. Please enable location access in your browser settings or search for a city manually.";
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Location permission denied. Please enable location access in your browser settings or search for a city manually.";
+            setError(errorMessage);
+            showNotification("Please enable location access in your browser settings");
             break;
-          case geolocationError.POSITION_UNAVAILABLE:
-            errorMessage =
-              "Location information unavailable. Please search for a city.";
+            
+          case error.POSITION_UNAVAILABLE:
+            if (retryCount < MAX_RETRIES) {
+              // Retry if location is temporarily unavailable
+              setTimeout(() => getCurrentLocation(retryCount + 1), 1000);
+              return;
+            }
+            errorMessage = "Location information is currently unavailable. Please check your connection or search for a city.";
+            setError(errorMessage);
+            showNotification("Cannot access location services");
             break;
-          case geolocationError.TIMEOUT:
-            errorMessage =
-              "Location request timed out. Please try again or search for a city.";
+            
+          case error.TIMEOUT:
+            if (retryCount < MAX_RETRIES) {
+              // Retry on timeout
+              setTimeout(() => getCurrentLocation(retryCount + 1), 1000);
+              return;
+            }
+            errorMessage = "Location request timed out. Please ensure your device has a good signal or search for a city.";
+            setError(errorMessage);
+            showNotification("Location request timed out");
             break;
+            
           default:
-            errorMessage =
-              "Unable to get your location. Please search for a city.";
+            errorMessage = "Unable to get your location. Please try again or search for a city.";
+            setError(errorMessage);
             break;
         }
-        setError(errorMessage);
+        
         setLoading(false);
-
-        // Show notification about the issue
-        showNotification(
-          "Location access needed for automatic weather updates"
-        );
       },
       {
-        enableHighAccuracy: true,
-        timeout: 10000, // 10 seconds timeout
-        maximumAge: 300000, // 5 minutes cache
+        enableHighAccuracy: true,  // Try to get the most accurate location
+        timeout: TIMEOUT,         // 20 seconds timeout
+        maximumAge: 0            // Force fresh location data
       }
     );
   };
