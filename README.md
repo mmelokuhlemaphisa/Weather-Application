@@ -1,68 +1,164 @@
-# 🌦️ React TS Weather App
 
-A modern and responsive **Weather Application** built with **React + TypeScript**. This app fetches real-time weather data from the **OpenWeatherMap API**, allowing users to view the current weather, hourly forecast, and weekly forecast for their current location or searched cities. It also supports multiple saved locations,and theme customization
+# 🌦️ React TypeScript Weather App
+
+A modern, responsive **Weather Application** built with **React + TypeScript**.
+The app uses the **OpenWeatherMap API** to display real-time weather information, including current conditions, hourly forecasts, and weekly forecasts.
+
+Users can search for cities, save multiple locations, switch themes, and choose temperature units.
 
 ---
-## Steps Taken to Build the React App
-* Set up React Project
-* npm create vite@latest
-* Project name Task8-1-UI-challenge
-* cd Task8-1-UI-challenge
-* npm install
-* npm run dev.                              ---                                         
+
+## 🚀 Project Overview
+
+This application allows users to:
+
+* View real-time weather updates
+* Check hourly and weekly forecasts
+* Automatically detect their current location
+* Save and manage multiple cities
+* Customize appearance and temperature units
+
+---
+
+## 🛠️ Steps Taken to Build the App
+
+1. Created a new React project using **Vite**
+2. Configured **TypeScript**
+3. Installed required dependencies
+4. Built reusable UI components
+5. Integrated OpenWeatherMap API
+6. Added local storage for saved locations
+7. Implemented light/dark theme switching
+8. Made the app fully responsive
+
+### Project Setup Commands
+
+```bash
+npm create vite@latest
+# Project name: Task8-1-UI-challenge
+cd Task8-1-UI-challenge
+npm install
+npm run dev
+```
+
+---
+
 ## ✨ Features
-- **Real-time Weather Info**  
-  - Current weather (temperature, humidity, wind speed, etc.)
-  - Hourly and daily forecasts
-- **Location-based Forecasting**  
-  - Auto-detects user’s location (with permission)
-  - Search and save multiple cities
-- **Weather Alerts**  
-  - Push notifications for severe conditions
-- **Customization**  
-  - Switch between **Celsius** and **Fahrenheit**
-  - Toggle between **light** and **dark themes**
-- **Offline Access**  
-  - Cached weather data stored in `localStorage`
-- **Responsive Design**  
-  - Works seamlessly on mobile, tablet, and desktop
+
+### 🌤️ Weather Information
+
+* Current weather (temperature, humidity, wind speed, etc.)
+* Hourly forecast
+* 7-day weather forecast
+
+### 📍 Location-Based Forecasting
+
+* Automatic location detection (with user permission)
+* Search for cities worldwide
+* Save multiple favorite locations
+
+### 🚨 Weather Alerts
+
+* Displays severe weather alerts (when available from API)
+
+### 🎨 Customization
+
+* Toggle between **Celsius (°C)** and **Fahrenheit (°F)**
+* Switch between **Light** and **Dark** themes
+
+### 💾 Offline Support
+
+* Cached weather data stored using `localStorage`
+
+### 📱 Responsive Design
+
+* Optimized for **mobile**, **tablet**, and **desktop** screens
+
 ---
 
-## How to Clone and Run This Project steps
-1. Open vs code.
-2.On welcome page click on Clone Git repository.
-3.Past the repository URL (https://github.com/mmelokuhlemaphisa/Task8-1-UI-Challenge.git) then press enter.
-4. Choose a local folder where you want to save project.
-5. Click Open.
-6. Use Terminal to install npm and run dev
-* npm install
-* npm run dev
+## 📦 How to Clone and Run the Project
+
+### Step 1: Clone the Repository
+
+1. Open **Visual Studio Code**
+2. On the welcome screen, click **“Clone Git Repository”**
+3. Paste the repository URL:
+
+   ```
+   https://github.com/mmelokuhlemaphisa/Task8-1-UI-Challenge.git
+   ```
+4. Press **Enter**
+5. Choose a local folder to save the project
+6. Click **Open**
 
 ---
 
-## Tech Stack
-- **React 18 + TypeScript**
-- **React Router DOM v6** – navigation
-- **Framer Motion** – animations
-- **Fetch API** – API requests
-- **localStorage** – data persistence
+### Step 2: Install Dependencies
+
+Open the VS Code terminal and run:
+
+```bash
+npm install
+```
+
+---
+
+### Step 3: Start the Development Server
+
+```bash
+npm run dev
+```
+
+The app will run locally, usually at:
+
+```
+http://localhost:5173
+```
+
+---
+
+## 🧰 Tech Stack
+
+* **React 18**
+* **TypeScript**
+* **React Router DOM v6** – navigation
+* **Framer Motion** – animations
+* **Fetch API** – API requests
+* **localStorage** – data persistence
+* **Vite** – fast development environment
 
 ---
 
 ## 🌍 API Reference
-Using **OpenWeatherMap One Call API**:
-- Current weather data
-- Hourly forecast
-- Daily forecast
-- Severe weather alerts
 
-📖 [OpenWeatherMap Docs](https://openweathermap.org/api)
+This project uses the **OpenWeatherMap One Call API** to fetch:
+
+* Current weather data
+* Hourly forecast
+* Daily forecast
+* Severe weather alerts
+
+📖 Official Documentation:
+👉 [https://openweathermap.org/api](https://openweathermap.org/api)
+
+> ⚠️ **Note:** You will need your own OpenWeatherMap API key to run the app properly.
 
 ---
 
 ## 🔮 Future Enhancements
-- Add **multi-language support** 🌐
-- Add **radar and satellite maps** 🗺️
-- Integrate with **PWA** for full offline experience 📦
+
+* 🌐 Multi-language support
+* 🗺️ Radar and satellite weather maps
+* 📦 Progressive Web App (PWA) support for full offline use
+* 🔔 Push notifications for weather alerts
 
 ---
+
+## 👤 Author
+
+**M. Maphisa**
+GitHub: [mmelokuhlemaphisa](https://github.com/mmelokuhlemaphisa)
+
+---
+
+
