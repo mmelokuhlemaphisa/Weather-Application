@@ -79,15 +79,13 @@ npm run dev
 ## 📦 How to Clone and Run the Project
 
 ### Step 1: Clone the Repository
-
-1. Open **Visual Studio Code**
-2. On the welcome screen, click **“Clone Git Repository”**
-3. Paste the repository URL:
+1. Copy the project repository link:
+2. Paste the repository URL:
 
    ```
-   https://github.com/mmelokuhlemaphisa/Task8-1-UI-Challenge.git
+   https://github.com/mmelokuhlemaphisa/Weather-Application
    ```
-4. Press **Enter**
+4. Use any Git tool or interface of your choice to clone the repository to your local machine.
 5. Choose a local folder to save the project
 6. Click **Open**
 
