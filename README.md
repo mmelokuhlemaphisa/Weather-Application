@@ -36,11 +36,11 @@ This application allows users to:
 ### Project Setup Commands
 
 ```bash
-npm create vite@latest
-# Project name: Task8-1-UI-challenge
-cd Task8-1-UI-challenge
-npm install
-npm run dev
+1. npm create vite@latest
+2. # Project name: Weather-Application
+3. cd Weather-Application
+4. npm install
+5. npm run dev
 ```
 
 ---
