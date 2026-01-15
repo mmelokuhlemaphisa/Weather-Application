@@ -90,14 +90,14 @@ body,
 .header-form {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 2rem;
   padding: 0.25rem;
   width: 100%;
   max-width: 400px;
   gap: 0.5rem;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(229, 231, 235, 0.8);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden; /* Prevent content overflow */
   color: #000;
@@ -120,12 +120,44 @@ body,
 
 .header-form input {
   flex: 1;
-  background: transparent;
   border: none;
-  outline: none;
-  color: #111827;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.75rem 1rem;
   font-size: 1rem;
-  padding: 0.75rem 0;
+  color: #111827;
+  outline: none;
+  width: 100%;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.header-form input:focus,
+.header-form input:active {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  background-color: white !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+}
+
+.header-form input::placeholder {
+  color: #6b7280 !important;
+  opacity: 1 !important;
+}
+
+/* Autofill / browser-supplied value overrides (WebKit) */
+.header-form input:-webkit-autofill,
+.header-form input:-webkit-autofill::first-line {
+  -webkit-text-fill-color: #111827 !important;
+  box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.9) inset !important;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.9) inset !important;
+}
+
+/* Edge/Firefox specific enforced color (fallbacks) */
+.header-form input::-moz-placeholder {
+  color: #6b7280 !important;
+}
+.header-form input:-ms-input-placeholder {
+  color: #6b7280 !important;
 }
 
 .header-form input::placeholder {
