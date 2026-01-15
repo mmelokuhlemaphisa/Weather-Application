@@ -5,8 +5,9 @@
 
 A modern, responsive **Weather Application** built with **React + TypeScript**.
 The app uses the **OpenWeatherMap API** to display real-time weather information, including current conditions, hourly forecasts, and weekly forecasts.
-
 Users can search for cities, save multiple locations, switch themes, and choose temperature units.
+
+View the **live app here:** [Weather App Live](https://weather-application-3wux.onrender.com)
 
 ---
 
