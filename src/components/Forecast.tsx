@@ -7,24 +7,15 @@ interface ForecastProps {
   viewMode: "daily" | "hourly";
 }
 
-/**
- * Generate weekday names starting from today
- */
+// Helper function to get day names starting from today
 const getWeekDaysFromToday = (count: number) => {
-  const days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  const todayIndex = new Date().getDay();
-
-  return Array.from({ length: count }, (_, i) =>
-    days[(todayIndex + i) % 7]
-  );
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const todayIndex = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+  
+  return Array.from({ length: count }, (_, i) => {
+    const dayIndex = (todayIndex + i) % 7;
+    return days[dayIndex];
+  });
 };
 
 const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
@@ -32,19 +23,22 @@ const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
 
   /* ---------------- DAILY FORECAST ---------------- */
   if (viewMode === "daily") {
-    const weekDays = getWeekDaysFromToday(forecast.daily.length);
-
-    data = forecast.daily.map((day, index) => ({
+    // Get the next 7 days starting from today
+    const weekDays = getWeekDaysFromToday(7);
+    
+    // Ensure we have enough forecast data
+    const forecastDays = forecast.daily?.slice(0, 7) || [];
+    
+    // Map the forecast data with the correct day names
+    data = forecastDays.map((day, index) => ({
       ...day,
-      day: weekDays[index],
+      day: weekDays[index] || `Day ${index + 1}`,
     }));
   }
 
   /* ---------------- HOURLY FORECAST ---------------- */
   if (viewMode === "hourly") {
     const now = new Date();
-
-    // Round down to nearest hour
     now.setMinutes(0, 0, 0);
 
     // End at 12 PM tomorrow
@@ -63,7 +57,6 @@ const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
 
     while (current <= tomorrowNoon) {
       const t = current.getTime();
-
       const before = raw.filter((h) => h.time <= t).slice(-1)[0];
       const after = raw.find((h) => h.time > t);
 
@@ -76,8 +69,7 @@ const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
         const ratio = (t - before.time) / (after.time - before.time);
         temp = Math.round(before.temp + (after.temp - before.temp) * ratio);
         precipitation = Math.round(
-          before.precipitation +
-            (after.precipitation - before.precipitation) * ratio
+          before.precipitation + (after.precipitation - before.precipitation) * ratio
         );
       }
 
@@ -91,7 +83,6 @@ const Forecast: React.FC<ForecastProps> = ({ forecast, viewMode }) => {
   return (
     <div className="forecast-card">
       <h2>Forecast ({viewMode})</h2>
-
       <div className="forecast-grid">
         {data.map((item, i) => (
           <div key={i} className="forecast-item">
