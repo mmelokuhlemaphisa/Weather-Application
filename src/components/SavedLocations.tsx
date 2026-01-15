@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FiMapPin, FiClock, FiX, FiChevronRight } from "react-icons/fi";
 import { WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm, WiFog } from "react-icons/wi";
 
@@ -50,16 +50,7 @@ const SavedLocations: React.FC<SavedLocationsProps> = ({
   fetchWeather,
   removeLocation,
 }) => {
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  // Update time every minute
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000);
-    
-    return () => clearInterval(timer);
-  }, []);
+  // Time-based effects can be added here if needed
 
   if (locations.length === 0) {
     return (

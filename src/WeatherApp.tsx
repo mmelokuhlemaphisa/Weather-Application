@@ -122,6 +122,15 @@ const WeatherApp: React.FC = () => {
       
       const currentJson = await currentRes.json();
       const forecastJson = await forecastRes.json();
+      
+      // Use the more accurate location name from the reverse geocoding
+      if (locationData?.name) {
+        currentJson.name = locationData.name;
+      }
+      if (locationData?.country) {
+        currentJson.sys = currentJson.sys || {};
+        currentJson.sys.country = locationData.country;
+      }
 
       const now = Date.now();
       const twelvePM = new Date();
